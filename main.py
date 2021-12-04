@@ -119,11 +119,13 @@ def trans_word(inputtext):
         output = re.sub('({})'.format('|'.join(map(re.escape, replacements.keys()))), lambda m: replacements[m.group()], inputtext)
     else:
         output = ""
-    cc = OpenCC('t2s')
+    cc = OpenCC('jp2t')
+    cc2 = OpenCC('t2s')
     output = cc.convert(output)
+    output = cc2.convert(output)
 
     return output
-    
+
 LINE_CHANNEL_ACCESS_TOKEN = os.environ['LINE_CHANNEL_ACCESS_TOKEN']
 LINE_CHANNEL_SECRET = os.environ['LINE_CHANNEL_SECRET']
 
@@ -157,8 +159,6 @@ def handle_message(event):
     line_bot_api.reply_message(
         event.reply_token,
         TextSendMessage(text=trans_word(event.message.text)))
-
-
 
 if __name__ == "__main__":
 #    app.run()
