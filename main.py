@@ -1,5 +1,6 @@
 import re
 import os
+from opencc import OpenCC
 from flask import Flask, request, abort
 
 from linebot import (
@@ -115,9 +116,14 @@ def trans_word(inputtext):
 'ファーウェイ':'华为技术有限公司',
 'HUAWEI':'华为技术有限公司'}
     if inputtext:
-        return re.sub('({})'.format('|'.join(map(re.escape, replacements.keys()))), lambda m: replacements[m.group()], inputtext)
+        output = re.sub('({})'.format('|'.join(map(re.escape, replacements.keys()))), lambda m: replacements[m.group()], inputtext)
     else:
-        return ""
+        output = ""
+    cc = OpenCC('t2s')
+    output = cc.convert(output)
+
+    return output
+    
 LINE_CHANNEL_ACCESS_TOKEN = os.environ['LINE_CHANNEL_ACCESS_TOKEN']
 LINE_CHANNEL_SECRET = os.environ['LINE_CHANNEL_SECRET']
 
