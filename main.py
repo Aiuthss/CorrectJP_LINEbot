@@ -119,10 +119,12 @@ def trans_word(inputtext):
         output = re.sub('({})'.format('|'.join(map(re.escape, replacements.keys()))), lambda m: replacements[m.group()], inputtext)
     else:
         output = ""
+        return output
     cc = OpenCC('jp2t')
     cc2 = OpenCC('t2s')
     output = cc.convert(output)
     output = cc2.convert(output)
+    output = re.sub('({})'.format('|'.join(map(re.escape, replacements.keys()))), lambda m: replacements[m.group()], output)
 
     return output
 
