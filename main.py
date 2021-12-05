@@ -1,6 +1,8 @@
 import re
 import os
 from opencc import OpenCC
+import requests
+import json
 from flask import Flask, request, abort
 
 from linebot import (
@@ -12,6 +14,12 @@ from linebot.exceptions import (
 from linebot.models import (
     MessageEvent, TextMessage, TextSendMessage,
 )
+
+def retranslate(inputtext):
+    URL = 'https://api-world.excite.co.jp/translate/?q=' + inputtext + '&apikey=nc3uGH4TeNQKFk4XG_LmgEeh3l0LcpcG&source=ja&target=zh-cn&reverse_option=1&format='
+    response = requests.get(URL)
+    output = json.loads(response.text)
+    return output['data']['retranslations']['translatedText']
 
 def trans_word(inputtext):
     replacements = {
@@ -116,10 +124,11 @@ def trans_word(inputtext):
 'ファーウェイ':'华为技术有限公司',
 'HUAWEI':'华为技术有限公司'}
     if inputtext:
-        output = re.sub('({})'.format('|'.join(map(re.escape, replacements.keys()))), lambda m: replacements[m.group()], inputtext)
+        output = retranslate(inputtext)
     else:
-        output = ""
+        output = ''
         return output
+    output = re.sub('({})'.format('|'.join(map(re.escape, replacements.keys()))), lambda m: replacements[m.group()], inputtext)
     cc = OpenCC('jp2t')
     cc2 = OpenCC('t2s')
     output = cc.convert(output)
